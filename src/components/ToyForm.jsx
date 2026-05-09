@@ -1,6 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
-function ToyForm({ addToy }) {
+function ToyForm({ onAddToy }) {
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
 
@@ -10,25 +10,33 @@ function ToyForm({ addToy }) {
     const newToy = {
       name,
       image,
-      likes: 0
+      likes: 0,
     };
 
-    addToy(newToy);
+    fetch("http://localhost:3000/toys", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newToy),
+    })
+      .then((res) => res.json())
+      .then((data) => onAddToy(data));
 
     setName("");
     setImage("");
   }
 
   return (
-    <form className="toy-form" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <input
-        placeholder="Toy name"
+        placeholder="Toy Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
 
       <input
-        placeholder="Image URL"
+        placeholder="Toy Image URL"
         value={image}
         onChange={(e) => setImage(e.target.value)}
       />
