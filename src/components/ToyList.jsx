@@ -8,19 +8,20 @@ function ToyList({ toys, onLike, onDelete }) {
   return (
     <div className="toy-list">
       {toys.map((toy) => (
-        <div key={toy.id} className="toy-card">
+        <div key={toy.id} data-testid="toy-card">
           <h3>{toy.name}</h3>
 
-          <img
-            src={toy.image}
-            alt={toy.name}
-            width="150"
-          />
+          <img src={toy.image} alt={toy.name} width="150" />
 
-          <p>❤️ {toy.likes} Likes</p>
+          <p>❤️ {toy.likes}</p>
 
-          <button onClick={() => onLike(toy)}>Like</button>
-          <button onClick={() => onDelete(toy)}>Delete</button>
+          <button onClick={() => onLike(toy)}>
+            Like &lt;3
+          </button>
+
+          <button onClick={() => onDelete(toy)}>
+            Donate to GoodWill
+          </button>
         </div>
       ))}
     </div>

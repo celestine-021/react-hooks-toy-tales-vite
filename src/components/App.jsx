@@ -5,39 +5,32 @@ import ToyForm from "./ToyForm";
 function App() {
   const [toys, setToys] = useState([]);
 
-  // GET TOYS (FIXED + DEBUG SAFE)
   useEffect(() => {
     fetch("http://localhost:3000/toys")
       .then((res) => res.json())
-      .then((data) => {
-        setToys(data);
-      })
-      .catch((err) => console.log("Fetch error:", err));
+      .then((data) => setToys(data));
   }, []);
 
-  // ADD TOY (POST)
-  function addToy(newToy) {
-    setToys((prev) => [...prev, newToy]);
+  function addToy(toy) {
+    setToys((prev) => [...prev, toy]);
   }
 
-  // LIKE TOY (PATCH)
   function handleLike(toy) {
+    const updatedToy = { ...toy, likes: toy.likes + 1 };
+
     fetch(`http://localhost:3000/toys/${toy.id}`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ likes: toy.likes + 1 }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedToy),
     })
       .then((res) => res.json())
-      .then((updatedToy) => {
+      .then((data) => {
         setToys((prev) =>
-          prev.map((t) => (t.id === updatedToy.id ? updatedToy : t))
+          prev.map((t) => (t.id === data.id ? data : t))
         );
       });
   }
 
-  // DELETE TOY
   function handleDelete(toy) {
     fetch(`http://localhost:3000/toys/${toy.id}`, {
       method: "DELETE",

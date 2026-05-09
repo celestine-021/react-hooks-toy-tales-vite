@@ -15,9 +15,7 @@ function ToyForm({ onAddToy }) {
 
     fetch("http://localhost:3000/toys", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newToy),
     })
       .then((res) => res.json())
@@ -41,7 +39,7 @@ function ToyForm({ onAddToy }) {
         onChange={(e) => setImage(e.target.value)}
       />
 
-      <button type="submit">Add Toy</button>
+      <button type="submit">Add a Toy</button>
     </form>
   );
 }
