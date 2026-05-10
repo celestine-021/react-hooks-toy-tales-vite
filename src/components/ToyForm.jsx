@@ -1,25 +1,27 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
-function ToyForm({ onAddToy }) {
-  const [name, setName] = useState("");
-  const [image, setImage] = useState("");
+function ToyForm({ addToy }) {
+  const [formData, setFormData] = useState({
+    name: "",
+    image: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!name || !image) return;
-
     const newToy = {
-      name,
-      image,
+      name: formData.name,
+      image: formData.image,
       likes: 0,
     };
 
-    onAddToy(newToy);
+    addToy(newToy);
 
-    // IMPORTANT: clear inputs (test expects clean UX)
-    setName("");
-    setImage("");
+    setFormData({ name: "", image: "" });
   };
 
   return (
@@ -27,15 +29,17 @@ function ToyForm({ onAddToy }) {
       <h2>Create New Toy</h2>
 
       <input
+        name="name"
         placeholder="Enter a toy's name..."
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        value={formData.name}
+        onChange={handleChange}
       />
 
       <input
+        name="image"
         placeholder="Enter a toy's image URL..."
-        value={image}
-        onChange={(e) => setImage(e.target.value)}
+        value={formData.image}
+        onChange={handleChange}
       />
 
       <button type="submit">Add a Toy</button>

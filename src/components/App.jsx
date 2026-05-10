@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ToyForm from "./ToyForm";
 import ToyList from "./ToyList";
 import "../index.css";
@@ -15,6 +15,17 @@ function App() {
       .then((data) => setToys(data));
   }, []);
 
+  // ADD toy
+  const addToy = (toy) => {
+    fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(toy),
+    })
+      .then((res) => res.json())
+      .then((newToy) => setToys([...toys, newToy]));
+  };
+
   // LIKE toy
   const handleLike = (toy) => {
     fetch(`${API}/${toy.id}`, {
@@ -24,44 +35,27 @@ function App() {
     })
       .then((res) => res.json())
       .then((updatedToy) => {
-        setToys((prev) =>
-          prev.map((t) => (t.id === updatedToy.id ? updatedToy : t))
-        );
+        setToys(toys.map((t) => (t.id === updatedToy.id ? updatedToy : t)));
       });
   };
 
-  // DELETE toy (DONATE)
-  const handleDonate = (id) => {
-    fetch(`${API}/${id}`, {
-      method: "DELETE",
-    }).then(() => {
-      setToys((prev) => prev.filter((toy) => toy.id !== id));
+  // DELETE toy (Donate button)
+  const handleDelete = (id) => {
+    fetch(`${API}/${id}`, { method: "DELETE" }).then(() => {
+      setToys(toys.filter((toy) => toy.id !== id));
     });
-  };
-
-  // ADD toy
-  const handleAddToy = (toy) => {
-    fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(toy),
-    })
-      .then((res) => res.json())
-      .then((newToy) => {
-        setToys((prev) => [...prev, newToy]);
-      });
   };
 
   return (
     <div className="container">
       <h1>Toy Tales</h1>
 
-      <ToyForm onAddToy={handleAddToy} />
+      <ToyForm addToy={addToy} />
 
       <ToyList
         toys={toys}
         onLike={handleLike}
-        onDonate={handleDonate}
+        onDelete={handleDelete}
       />
     </div>
   );
