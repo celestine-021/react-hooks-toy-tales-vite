@@ -1,134 +1,65 @@
 import { useEffect, useState } from "react";
+import ToyForm from "./ToyForm";
+import ToyCard from "./ToyCard";
 
 function App() {
   const [toys, setToys] = useState([]);
-  const [toyName, setToyName] = useState("");
-  const [toyImage, setToyImage] = useState("");
 
-  // FETCH TOYS
   useEffect(() => {
     fetch("http://localhost:3000/toys")
       .then((res) => res.json())
       .then((data) => setToys(data));
   }, []);
 
-  // ADD TOY
-  function handleSubmit(e) {
-    e.preventDefault();
-
-    const newToy = {
-      name: toyName,
-      image: toyImage,
-      likes: 0,
-    };
-
+  function handleAddToy(newToy) {
     fetch("http://localhost:3000/toys", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newToy),
     })
       .then((res) => res.json())
-      .then((addedToy) => {
-        setToys([...toys, addedToy]);
-      });
-
-    setToyName("");
-    setToyImage("");
+      .then((data) => setToys([...toys, data]));
   }
 
-  // LIKE TOY
-  function handleLike(id, currentLikes) {
-    const updatedLikes = Number(currentLikes) + 1;
+  function handleLikeToy(id) {
+    const toy = toys.find((t) => t.id === id);
 
     fetch(`http://localhost:3000/toys/${id}`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        likes: updatedLikes,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ likes: toy.likes + 1 }),
     })
       .then((res) => res.json())
-      .then((updatedToy) => {
-        const updatedToys = toys.map((toy) =>
-          toy.id === updatedToy.id ? updatedToy : toy
-        );
-
-        setToys(updatedToys);
-      });
+      .then((updatedToy) =>
+        setToys(toys.map((t) => (t.id === id ? updatedToy : t)))
+      );
   }
 
-  // DELETE TOY
-  function handleDelete(id) {
+  function handleDeleteToy(id) {
     fetch(`http://localhost:3000/toys/${id}`, {
       method: "DELETE",
-    }).then(() => {
-      const filteredToys = toys.filter((toy) => toy.id !== id);
-      setToys(filteredToys);
-    });
+    }).then(() => setToys(toys.filter((t) => t.id !== id)));
   }
 
   return (
     <div className="container">
       <h1>Toy Tales</h1>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Enter a toy's name..."
-          value={toyName}
-          onChange={(e) => setToyName(e.target.value)}
-        />
-
-        <input
-          type="text"
-          placeholder="Enter a toy's image..."
-          value={toyImage}
-          onChange={(e) => setToyImage(e.target.value)}
-        />
-
-        <button type="submit">Add a Toy</button>
-      </form>
+      <ToyForm onAddToy={handleAddToy} />
 
       <div className="toy-container">
-        {toys.map((toy) => (
-          <div
-            className="toy-card"
-            data-testid="toy-card"
-            key={toy.id}
-          >
-            <h2>{toy.name}</h2>
-
-            <img
-              src={toy.image}
-              alt={toy.name}
-              width="200"
+        {toys.length > 0 ? (
+          toys.map((toy) => (
+            <ToyCard
+              key={toy.id}
+              toy={toy}
+              onLikeToy={handleLikeToy}
+              onDeleteToy={handleDeleteToy}
             />
-
-            <p className="likes-count">
-              {toy.likes} Likes
-            </p>
-
-            <button
-              onClick={() =>
-                handleLike(toy.id, toy.likes)
-              }
-            >
-              Like {"<3"}
-            </button>
-
-            <button
-              onClick={() =>
-                handleDelete(toy.id)
-              }
-            >
-              Donate to GoodWill
-            </button>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>No toys available</p>
+        )}
       </div>
     </div>
   );
