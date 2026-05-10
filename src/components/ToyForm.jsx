@@ -8,8 +8,8 @@ function ToyForm({ onAddToy }) {
     e.preventDefault();
 
     const newToy = {
-      name: name,
-      image: image,
+      name,
+      image,
       likes: 0,
     };
 
@@ -21,16 +21,18 @@ function ToyForm({ onAddToy }) {
 
   return (
     <form onSubmit={handleSubmit}>
+      <h2>Create New Toy</h2>
+
       <input
-        type="text"
         placeholder="Enter a toy's name..."
+        type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
 
       <input
-        type="text"
         placeholder="Enter a toy's image URL..."
+        type="text"
         value={image}
         onChange={(e) => setImage(e.target.value)}
       />
