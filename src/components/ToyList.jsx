@@ -1,28 +1,16 @@
 import React from "react";
+import ToyCard from "./ToyCard";
 
-function ToyList({ toys, onLike, onDelete }) {
-  if (!toys || toys.length === 0) {
-    return <p>No toys available</p>;
-  }
-
+function ToyList({ toys, onLike, onDonate }) {
   return (
-    <div className="toy-list">
+    <div className="toy-container">
       {toys.map((toy) => (
-        <div key={toy.id} data-testid="toy-card">
-          <h3>{toy.name}</h3>
-
-          <img src={toy.image} alt={toy.name} width="150" />
-
-          <p>❤️ {toy.likes}</p>
-
-          <button onClick={() => onLike(toy)}>
-            Like &lt;3
-          </button>
-
-          <button onClick={() => onDelete(toy)}>
-            Donate to GoodWill
-          </button>
-        </div>
+        <ToyCard
+          key={toy.id}
+          toy={toy}
+          onLike={onLike}
+          onDonate={onDonate}
+        />
       ))}
     </div>
   );

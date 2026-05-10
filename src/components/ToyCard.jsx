@@ -1,3 +1,5 @@
+import React from "react";
+
 function ToyCard({ toy, onLike, onDonate }) {
   return (
     <div className="card" data-testid="toy-card">
@@ -5,11 +7,9 @@ function ToyCard({ toy, onLike, onDonate }) {
 
       <img src={toy.image} alt={toy.name} />
 
-      <p>
-        {toy.likes} Likes{" "}
-      </p>
+      <p>{toy.likes} Likes</p>
 
-      <button onClick={() => onLike(toy.id)}>
+      <button onClick={() => onLike(toy)}>
         Like &lt;3
       </button>
 

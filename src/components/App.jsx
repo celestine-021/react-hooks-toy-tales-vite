@@ -1,31 +1,56 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ToyForm from "./ToyForm";
-import ToyCard from "./ToyCard";
+import ToyList from "./ToyList";
+import "../index.css";
+
+const API = "http://localhost:3000/toys";
 
 function App() {
   const [toys, setToys] = useState([]);
 
+  // GET toys on load
   useEffect(() => {
-    fetch("http://localhost:3000/toys")
+    fetch(API)
       .then((res) => res.json())
       .then((data) => setToys(data));
   }, []);
 
-  function handleAddToy(newToy) {
-    setToys([...toys, newToy]);
-  }
+  // LIKE toy
+  const handleLike = (toy) => {
+    fetch(`${API}/${toy.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ likes: toy.likes + 1 }),
+    })
+      .then((res) => res.json())
+      .then((updatedToy) => {
+        setToys((prev) =>
+          prev.map((t) => (t.id === updatedToy.id ? updatedToy : t))
+        );
+      });
+  };
 
-  function handleLike(id) {
-    setToys(
-      toys.map((toy) =>
-        toy.id === id ? { ...toy, likes: toy.likes + 1 } : toy
-      )
-    );
-  }
+  // DELETE toy (DONATE)
+  const handleDonate = (id) => {
+    fetch(`${API}/${id}`, {
+      method: "DELETE",
+    }).then(() => {
+      setToys((prev) => prev.filter((toy) => toy.id !== id));
+    });
+  };
 
-  function handleDonate(id) {
-    setToys(toys.filter((toy) => toy.id !== id));
-  }
+  // ADD toy
+  const handleAddToy = (toy) => {
+    fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(toy),
+    })
+      .then((res) => res.json())
+      .then((newToy) => {
+        setToys((prev) => [...prev, newToy]);
+      });
+  };
 
   return (
     <div className="container">
@@ -33,16 +58,11 @@ function App() {
 
       <ToyForm onAddToy={handleAddToy} />
 
-      <div className="toy-container">
-        {toys.map((toy) => (
-          <ToyCard
-            key={toy.id}
-            toy={toy}
-            onLike={handleLike}
-            onDonate={handleDonate}
-          />
-        ))}
-      </div>
+      <ToyList
+        toys={toys}
+        onLike={handleLike}
+        onDonate={handleDonate}
+      />
     </div>
   );
 }
