@@ -11,7 +11,7 @@ function App() {
       .then((data) => setToys(data));
   }, []);
 
-  function handleAddToy(newToy) {
+  function addToy(newToy) {
     fetch("http://localhost:3000/toys", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -21,7 +21,7 @@ function App() {
       .then((data) => setToys([...toys, data]));
   }
 
-  function handleLikeToy(id) {
+  function likeToy(id) {
     const toy = toys.find((t) => t.id === id);
 
     fetch(`http://localhost:3000/toys/${id}`, {
@@ -30,12 +30,12 @@ function App() {
       body: JSON.stringify({ likes: toy.likes + 1 }),
     })
       .then((res) => res.json())
-      .then((updatedToy) =>
-        setToys(toys.map((t) => (t.id === id ? updatedToy : t)))
+      .then((updated) =>
+        setToys(toys.map((t) => (t.id === id ? updated : t)))
       );
   }
 
-  function handleDeleteToy(id) {
+  function deleteToy(id) {
     fetch(`http://localhost:3000/toys/${id}`, {
       method: "DELETE",
     }).then(() => setToys(toys.filter((t) => t.id !== id)));
@@ -45,7 +45,7 @@ function App() {
     <div className="container">
       <h1>Toy Tales</h1>
 
-      <ToyForm onAddToy={handleAddToy} />
+      <ToyForm onAddToy={addToy} />
 
       <div className="toy-container">
         {toys.length > 0 ? (
@@ -53,8 +53,8 @@ function App() {
             <ToyCard
               key={toy.id}
               toy={toy}
-              onLikeToy={handleLikeToy}
-              onDeleteToy={handleDeleteToy}
+              onLikeToy={likeToy}
+              onDeleteToy={deleteToy}
             />
           ))
         ) : (
